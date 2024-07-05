@@ -1,0 +1,44 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\PP\BIS\System\Session]
+"KeyIncr"="0"
+"Statable"="Yes"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\PP\BIS\System\StateServer]
+"Type"="Redis"
+"Host"="${SS_HOST}"
+"Port"="6379"
+"ExpireTime"="3600"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${FP_REPO}]
+"Name"="${FP_REPO}"
+"Driver"="POSTGRES"
+"Package"="STANDARDSECURITYPACKAGE"
+"AuthenticationEx"="1"
+"Authentication"="1"
+"Crs"=""
+"Crsa"=""
+"CrLP"="1"
+"DebugMode"="1"
+"CompileAssemblyOnly"="0"
+"MetabaseConnectForAuditModeEx"=dword:00000001
+"UseOldComplexPassword"=dword:00000000
+"CheckDefaultDB"=dword:00000000
+"CheckAuditUser"=dword:00000000
+"DL"=dword:00000000
+"CusEv"=dword:00000000
+"UCL"=dword:00000000
+"PingTimeout"=dword:0000ea60
+"CachedTables"="LAST,OBJ,DAT,SEC,SD,PAR,MOD,SCSH"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${FP_REPO}\LogonData]
+"SERVER"="8:${DB_HOST}"
+"DATABASE"="8:${FP_REPO}.${FP_REPO_SCHEMA}"
+"PROVIDER"="8:"
+"CASESENSITIVE"="8:false"
+"DATABASE_ONLY"="8:${FP_REPO}"
+"SCHEMA_ONLY"="8:${FP_REPO_SCHEMA}"
+"PQGSSAPI"="8:false"
+"PQKRBSRVNAME"="8:"
+"SUPPORTBINARYPROTOCOL"="8:"
+"USEUPN"="8:false"

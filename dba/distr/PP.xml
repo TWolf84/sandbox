@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pp>
+        <proxy url="/${WEB_APP_URI}/app/PPService.axd" />
+        <metabase id="${FP_REPO}" />
+</pp>

@@ -1,0 +1,24 @@
+{
+    "targetRepo": "${FP_REPO}",
+    "targetApp": "${FP_APP}",
+    "ppServiceUrl": "/${WEB_APP_URI}/app/PPService.axd",
+    "locale": ["ru"],
+    "repositories": {
+      "${FP_REPO}": {
+        "repoIdent": "${FP_REPO}",
+        "apps": {
+          "${FP_APP}": {
+            "appIdent": "${FP_APP}",
+            "breadcrumbRootTitle": "${FP_APP}",
+            "mainMenuLogo": "assets/design/img/PPlogo_menuheader.png",
+            "mainMenuLogoMini": "assets/design/img/PPlogo_sm.svg",
+            "pageMetadataTitle": "${FP_APP}",
+            "pageMetadataProductIcon": "assets/design/img/budget.svg",
+            "pageMetadataLogo": "assets/design/img/PPlogo_login.png"
+          }
+        }
+      }
+    },
+    "showNavGroupFirstElement": true,
+    "ribbonAutoHiding":true
+  }

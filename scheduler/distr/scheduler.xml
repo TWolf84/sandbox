@@ -1,0 +1,7 @@
+<Metabases>
+	<${FP_REPO} Name="${FP_REPO}" Authentication="1" Driver="POSTGRES" Package="STANDARDSECURITYPACKAGE" DebugMode="1">
+		<LogonData DATABASE="${FP_REPO}.${FP_REPO_SCHEMA}" SERVER="${DB_HOST}"/>
+		<Credentials Authentication="1" USER="${FP_USER}" PASSWORD="${FP_USER}"/>
+		<TaskContainer KEY="${FP_CONTAINER_KEY}" ID="${FP_CONTAINER_ID}" RestartSecs="5"/>
+	</${FP_REPO}>
+</Metabases>

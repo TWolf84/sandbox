@@ -1,0 +1,89 @@
+services:
+  pg:
+    build:
+      context: pg/
+      args:
+        - FP_USER=${FP_USER}
+        - FP_REPO=${FP_REPO}
+        - FP_REPO_SCHEMA=${FP_REPO_SCHEMA}
+        - FP_USER_AUDIT=${FP_USER_AUDIT}
+        - PG_LOG_STATEMENT=${PG_LOG_STATEMENT}
+    volumes:
+      - pg_data:/var/lib/postgresql/11/main
+    ports: 
+      - "5432:5432"
+  redis:
+    build:
+      context: redis/
+      args:
+        - SS_LOG_LEVEL=${SS_LOG_LEVEL}
+  bi:
+    environment:
+      - LSHOST
+    build:
+      context: /
+      dockerfile: bi/Dockerfile
+      args:
+        - BI_PACKAGE=${BI_PACKAGE}
+        - BI_OPT_DIR=${BI_OPT_DIR}
+        - BI_ETC_DIR=${BI_ETC_DIR}
+        - BI_ETC_CTL=${BI_ETC_CTL}
+        - FP_RELEASE=${FP_RELEASE}
+        - FP_USER=${FP_USER}
+        - FP_REPO=${FP_REPO}
+        - FP_REPO_SCHEMA=${FP_REPO_SCHEMA}
+        - FP_USER_AUDIT=${FP_USER_AUDIT}
+        - DB_HOST=pg
+        - SS_HOST=redis
+    ports: 
+      - "8809:8809"
+    links:
+      - pg
+      - redis
+    depends_on:
+      - pg
+      - redis
+  dba:
+    build:
+      context: /
+      dockerfile: dba/Dockerfile
+      args:
+        - WEB_PACKAGE=${WEB_PACKAGE}
+        - WEB_DBA_ZIP=${WEB_DBA_ZIP}
+        - WEB_APP_DIR=${WEB_APP_DIR}
+        - WEB_DBA_DIR=${WEB_DBA_DIR}
+        - WEB_ETC_DIR=${WEB_ETC_DIR}
+        - WEB_ETC_CTL=${WEB_ETC_CTL}
+        - WEB_APP_URI=${WEB_APP_URI}
+        - FP_REPO=${FP_REPO}
+        - FP_APP=${FP_APP}
+        - BI_HOST=bi
+        - BI_SERVICE=${BI_SERVICE}
+    ports:
+      - "8109:8109"
+    links:
+      - bi
+    depends_on:
+      - bi
+  scheduler:
+    environment:
+      - LSHOST
+    build:
+      context: /
+      dockerfile: scheduler/Dockerfile
+      args:
+        - BI_PACKAGE=${BI_PACKAGE}
+        - BI_OPT_DIR=${BI_OPT_DIR}
+        - FP_USER=${FP_USER}
+        - FP_REPO=${FP_REPO}
+        - FP_REPO_SCHEMA=${FP_REPO_SCHEMA}
+        - FP_USER_AUDIT=${FP_USER_AUDIT}
+        - DB_HOST=pg
+        - FP_CONTAINER_KEY=${FP_CONTAINER_KEY}
+        - FP_CONTAINER_ID=${FP_CONTAINER_ID}
+    links:
+      - pg
+    depends_on:
+      - pg
+volumes:
+  pg_data:

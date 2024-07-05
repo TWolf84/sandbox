@@ -1,0 +1,7 @@
+<PP>
+    <Metabases>
+        <${FP_REPO} Authentication="1" AuthenticationEx="1" CachedTables="" CheckDefaultDB="true" CompileAssemblyOnly="0" CrLP="1" Crs="" Crsa="" CusEv="false" DL="false" DebugMode="1" Driver="POSTGRES" Name="${FP_REPO}" Package="STANDARDSECURITYPACKAGE" PingTimeout="60000" UCL="false">
+            <LogonData CASESENSITIVE="false" DATABASE="${FP_REPO}.${FP_REPO_SCHEMA}" DATABASE_ONLY="${FP_REPO}" PQGSSAPI="" PQKRBSRVNAME="" PROVIDER="POSTGRES" SCHEMA_ONLY="${FP_REPO_SCHEMA}" SERVER="${DB_HOST}" SUPPORTBINARYPROTOCOL="" USEUPN="true" />
+        </${FP_REPO}>
+    </Metabases>
+</PP>
