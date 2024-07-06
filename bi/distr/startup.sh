@@ -19,6 +19,8 @@ fi
 
 # BI repository
 xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/RepoManager -ocreate-repo -tpostgres -s$DB_HOST -d$FP_REPO -m$FP_REPO_SCHEMA -u$FP_USER -w$FP_USER -fresource -i
+cd /usr/bin
+python3 -m repos_to_config "/repositories" "/opt/foresight/"$BI_OPT_DIR"/bin/registry.reg" "/opt/foresight/"$BI_OPT_DIR"/bin"
 
 # BI audit user
 psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "GRANT SELECT ON TABLE $FP_REPO_SCHEMA.b_jlo TO \"$FP_USER_AUDIT\";"

@@ -1,0 +1,10 @@
+manager:        
+  projects: # список проектов
+    - FKXXXX: # Проект
+        - EXTERNAL:    {"host": "external.host", "db": "EXTERNAL_DB", "scheme": "public", "user": "USER"}
+  hosts: 
+    - external:
+        address: "external.host"
+        audit:
+          crs: "<base64 string>"
+          crsa: "<base64 string>://gos"

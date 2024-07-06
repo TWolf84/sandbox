@@ -1,4 +1,5 @@
-FROM registry.astralinux.ru/library/alse:1.7.5
+ARG ASTRA_LINUX
+FROM $ASTRA_LINUX
 
 ENV TZ=Europe/Moscow
 
@@ -40,7 +41,9 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
     #apt-get install -y -qq /tmp/libpq5*.deb && \
  apt-get install -y nano && \
  apt-get install -y less && \
+ apt-get install -y python3-pip && \
  apt-get clean all && \
+ pip3 install PyYAML && \
  echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
  locale-gen && \
@@ -55,7 +58,10 @@ ARG BI_ETC_CTL
 ENV BI_ETC_CTL $BI_ETC_CTL
 
 ADD bi/distr/lsmon /opt/foresight/$BI_OPT_DIR/bin/lsmon
+ADD bi/distr/project.tpl /opt/foresight/$BI_OPT_DIR/bin/project.tpl
+ADD bi/distr/host.tpl /opt/foresight/$BI_OPT_DIR/bin/host.tpl
 ADD bi/distr/registry.reg /opt/foresight/$BI_OPT_DIR/bin/registry.reg
+ADD scripts/repos_to_config.py /usr/bin/
 ADD scripts/xvfb-run /usr/bin/
 ADD bi/distr/startup.sh /usr/bin/
 
@@ -80,6 +86,8 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/li
     sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
     sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
     sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
+    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_OPT_DIR/bin/project.tpl && \
+    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_OPT_DIR/bin/host.tpl && \
     sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
     chown -R www-data:www-data /opt/foresight && \
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \

@@ -1,4 +1,5 @@
-FROM registry.astralinux.ru/library/alse:1.7.5
+ARG ASTRA_LINUX
+FROM $ASTRA_LINUX
 
 ENV TZ=Europe/Moscow
 

@@ -1,22 +1,32 @@
+x-image: &image
+  ASTRA_LINUX: registry.astralinux.ru/library/alse:1.7.5
+
 services:
   pg:
     build:
       context: pg/
       args:
-        - FP_USER=${FP_USER}
-        - FP_REPO=${FP_REPO}
-        - FP_REPO_SCHEMA=${FP_REPO_SCHEMA}
-        - FP_USER_AUDIT=${FP_USER_AUDIT}
-        - PG_LOG_STATEMENT=${PG_LOG_STATEMENT}
+        <<: *image
+        FP_USER: ${FP_USER}
+        FP_REPO: ${FP_REPO}
+        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
+        FP_USER_AUDIT: ${FP_USER_AUDIT}
+        PG_LOG_STATEMENT: ${PG_LOG_STATEMENT}
     volumes:
       - pg_data:/var/lib/postgresql/11/main
     ports: 
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready"]
+      interval: 5s
+      retries: 5
+      timeout: 30s
   redis:
     build:
       context: redis/
       args:
-        - SS_LOG_LEVEL=${SS_LOG_LEVEL}
+        <<: *image
+        SS_LOG_LEVEL: ${SS_LOG_LEVEL}
   bi:
     environment:
       - LSHOST
@@ -24,41 +34,47 @@ services:
       context: /
       dockerfile: bi/Dockerfile
       args:
-        - BI_PACKAGE=${BI_PACKAGE}
-        - BI_OPT_DIR=${BI_OPT_DIR}
-        - BI_ETC_DIR=${BI_ETC_DIR}
-        - BI_ETC_CTL=${BI_ETC_CTL}
-        - FP_RELEASE=${FP_RELEASE}
-        - FP_USER=${FP_USER}
-        - FP_REPO=${FP_REPO}
-        - FP_REPO_SCHEMA=${FP_REPO_SCHEMA}
-        - FP_USER_AUDIT=${FP_USER_AUDIT}
-        - DB_HOST=pg
-        - SS_HOST=redis
+        <<: *image
+        BI_PACKAGE: ${BI_PACKAGE}
+        BI_OPT_DIR: ${BI_OPT_DIR}
+        BI_ETC_DIR: ${BI_ETC_DIR}
+        BI_ETC_CTL: ${BI_ETC_CTL}
+        FP_RELEASE: ${FP_RELEASE}
+        FP_USER: ${FP_USER}
+        FP_REPO: ${FP_REPO}
+        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
+        FP_USER_AUDIT: ${FP_USER_AUDIT}
+        DB_HOST: pg
+        SS_HOST: redis
     ports: 
       - "8809:8809"
     links:
       - pg
       - redis
     depends_on:
-      - pg
-      - redis
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    configs:
+      - repositories
   dba:
     build:
       context: /
       dockerfile: dba/Dockerfile
       args:
-        - WEB_PACKAGE=${WEB_PACKAGE}
-        - WEB_DBA_ZIP=${WEB_DBA_ZIP}
-        - WEB_APP_DIR=${WEB_APP_DIR}
-        - WEB_DBA_DIR=${WEB_DBA_DIR}
-        - WEB_ETC_DIR=${WEB_ETC_DIR}
-        - WEB_ETC_CTL=${WEB_ETC_CTL}
-        - WEB_APP_URI=${WEB_APP_URI}
-        - FP_REPO=${FP_REPO}
-        - FP_APP=${FP_APP}
-        - BI_HOST=bi
-        - BI_SERVICE=${BI_SERVICE}
+        <<: *image
+        WEB_PACKAGE: ${WEB_PACKAGE}
+        WEB_DBA_ZIP: ${WEB_DBA_ZIP}
+        WEB_APP_DIR: ${WEB_APP_DIR}
+        WEB_DBA_DIR: ${WEB_DBA_DIR}
+        WEB_ETC_DIR: ${WEB_ETC_DIR}
+        WEB_ETC_CTL: ${WEB_ETC_CTL}
+        WEB_APP_URI: ${WEB_APP_URI}
+        FP_REPO: ${FP_REPO}
+        FP_APP: ${FP_APP}
+        BI_HOST: bi
+        BI_SERVICE: ${BI_SERVICE}
     ports:
       - "8109:8109"
     links:
@@ -72,18 +88,24 @@ services:
       context: /
       dockerfile: scheduler/Dockerfile
       args:
-        - BI_PACKAGE=${BI_PACKAGE}
-        - BI_OPT_DIR=${BI_OPT_DIR}
-        - FP_USER=${FP_USER}
-        - FP_REPO=${FP_REPO}
-        - FP_REPO_SCHEMA=${FP_REPO_SCHEMA}
-        - FP_USER_AUDIT=${FP_USER_AUDIT}
-        - DB_HOST=pg
-        - FP_CONTAINER_KEY=${FP_CONTAINER_KEY}
-        - FP_CONTAINER_ID=${FP_CONTAINER_ID}
+        <<: *image
+        BI_PACKAGE: ${BI_PACKAGE}
+        BI_OPT_DIR: ${BI_OPT_DIR}
+        FP_USER: ${FP_USER}
+        FP_REPO: ${FP_REPO}
+        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
+        FP_USER_AUDIT: ${FP_USER_AUDIT}
+        FP_CONTAINER_KEY: ${FP_CONTAINER_KEY}
+        FP_CONTAINER_ID: ${FP_CONTAINER_ID}
+        DB_HOST: pg
     links:
       - pg
     depends_on:
       - pg
+
 volumes:
   pg_data:
+
+configs:
+  repositories:
+    file: repos.yml
