@@ -17,7 +17,7 @@
 "CusEv"=dword:00000000
 "UCL"=dword:00000000
 "PingTimeout"=dword:0000ea60
-"CachedTables"="LAST,OBJ,DAT,SEC,SD,PAR,MOD,SCSH"
+"CachedTables"=""
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${project}\LogonData]
 "SERVER"="8:${project.host}"

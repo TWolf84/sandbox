@@ -29,7 +29,7 @@ Windows Registry Editor Version 5.00
 "CusEv"=dword:00000000
 "UCL"=dword:00000000
 "PingTimeout"=dword:0000ea60
-"CachedTables"="LAST,OBJ,DAT,SEC,SD,PAR,MOD,SCSH"
+"CachedTables"="OBJ;DAT;SD;PAR;MOD;SCSH"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${FP_REPO}\LogonData]
 "SERVER"="8:${DB_HOST}"

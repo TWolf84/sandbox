@@ -42,8 +42,12 @@ http://localhost:8109/dba/
 # очистка диска
 
 dispart
-select vdisk file="c:\Users\User\AppData\Local\rancher-desktop\distro-data\ext4.vhdx"
+select vdisk file="d:\wsl\rancher-desktop\ext4.vhdx"
 compact vdisk
+
+либо
+
+Optimize-VHD -Path d:\wsl\rancher-desktop\ext4.vhdx -Mode Full
 
 # перенос диска
 
