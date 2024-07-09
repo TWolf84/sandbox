@@ -12,7 +12,7 @@ ARG FP_USER_AUDIT
 
 USER postgres
 RUN /etc/init.d/postgresql start \
-  && psql --command "CREATE ROLE \"$FP_USER\" LOGIN ENCRYPTED PASSWORD '$FP_USER' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;" \
+  && psql --command "CREATE ROLE \"$FP_USER\" LOGIN ENCRYPTED PASSWORD '$FP_USER' NOSUPERUSER INHERIT NOCREATEDB CREATEROLE NOREPLICATION;" \
   && psql --command "CREATE DATABASE \"$FP_REPO\" WITH OWNER = \"$FP_USER\" ENCODING = 'UTF8' TABLESPACE = pg_default  LC_COLLATE = default LC_CTYPE = default CONNECTION LIMIT = -1;" \
   && psql --command "ALTER DATABASE \"$FP_REPO\" SET lo_compat_privileges = 'on';" \
   && psql --command "GRANT ALL ON DATABASE \"$FP_REPO\" TO \"$FP_USER\";" \
