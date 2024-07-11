@@ -4,7 +4,8 @@ x-image: &image
 services:
   pg:
     build:
-      context: pg/
+      context: /
+      dockerfile: pg/Dockerfile
       args:
         <<: *image
         FP_USER: ${FP_USER}
@@ -23,7 +24,8 @@ services:
       timeout: 30s
   redis:
     build:
-      context: redis/
+      context: /
+      dockerfile: redis/Dockerfile
       args:
         <<: *image
         SS_LOG_LEVEL: ${SS_LOG_LEVEL}

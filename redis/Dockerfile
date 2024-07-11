@@ -3,11 +3,11 @@ FROM $ASTRA_LINUX
 
 ENV TZ=Europe/Moscow
 
-#COPY sources.list /etc/apt/
+ADD packages/sources.list /etc/apt/
 RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y lsb-release && apt-get clean all \
     && apt-get install -y redis-server
 
-ADD distr/redis.conf /etc/redis/redis.conf
+ADD redis/distr/redis.conf /etc/redis/redis.conf
 
 ARG SS_LOG_LEVEL
 

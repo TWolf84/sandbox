@@ -7,7 +7,7 @@ ARG WEB_PACKAGE
 ARG WEB_DBA_ZIP
 ADD packages/$WEB_PACKAGE /tmp/
 ADD packages/$WEB_DBA_ZIP /tmp/
-#COPY sources.list /etc/apt/
+COPY packages/sources.list /etc/apt/
 
 ARG WEB_APP_DIR
 ARG WEB_DBA_DIR

@@ -3,6 +3,7 @@ FROM $ASTRA_LINUX
 
 ENV TZ=Europe/Moscow
 
+ADD packages/sources.list /etc/apt/
 RUN apt-get update && apt-get -y -q dist-upgrade && apt-get -y -q install postgresql-11
 
 ARG FP_USER
@@ -41,7 +42,7 @@ EXPOSE 5432
 
 VOLUME ["/var/lib/postgresql/11/main"]
 
-ADD distr/startup.sh /usr/bin/startup.sh
+ADD pg/distr/startup.sh /usr/bin/startup.sh
 
 ARG PG_LOG_STATEMENT
 ENV PG_LOG_STATEMENT $PG_LOG_STATEMENT

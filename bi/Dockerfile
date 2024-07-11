@@ -6,6 +6,7 @@ ENV TZ=Europe/Moscow
 ARG BI_PACKAGE
 ADD packages/$BI_PACKAGE /tmp/
 #ADD packages/libpq5*.deb /tmp/
+COPY packages/sources.list /etc/apt/
 
 RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
  apt-get update && \
