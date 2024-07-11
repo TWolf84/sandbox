@@ -53,7 +53,8 @@ RUN sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$WEB_ETC_DIR/apache2.conf
  sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$WEB_APP_DIR/config/PP.xml && \
  sed -i 's/${WEB_APP_URI}/'$WEB_APP_URI'/g' /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json && \
  sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json && \
- sed -i 's/${FP_APP}/'$FP_APP'/g' /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json
+ sed -i 's/${FP_APP}/'$FP_APP'/g' /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json && \
+ sed -i -e 's/\r$//' /usr/bin/startup.sh
 
 EXPOSE 8109
 

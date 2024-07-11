@@ -92,7 +92,9 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/li
     sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
     chown -R www-data:www-data /opt/foresight && \
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \
-    ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/error.log
+    ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/error.log && \
+    sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
+    sed -i -e 's/\r$//' /usr/bin/startup.sh
 
 EXPOSE 8809
 

@@ -74,7 +74,9 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/li
  sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
  sed -i 's/${FP_USER}/'$FP_USER'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
  sed -i 's/${FP_CONTAINER_KEY}/'$FP_CONTAINER_KEY'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i 's/${FP_CONTAINER_ID}/'$FP_CONTAINER_ID'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml
+ sed -i 's/${FP_CONTAINER_ID}/'$FP_CONTAINER_ID'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+ sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
+ sed -i -e 's/\r$//' /usr/bin/startup.sh
 
 # Uncomment some lines below (with export) to extend log
 # Extended debug log (stderr)
