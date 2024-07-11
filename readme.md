@@ -59,6 +59,7 @@
 ## Настройка проектного КБП
    - 
    
+# Для справки
 ## сборка и запуск PG
 
 cd D:\docker\pg
@@ -69,7 +70,6 @@ docker run -it --rm -p 5432:5432 --name db user/postgresql
 или
 docker run -d -p 5432:5432 --name sandbox_db user/postgresql
 
-# Для справки
 ## Cборка и запуск BI
 
 cd D:\docker\bi\fp9_cert
