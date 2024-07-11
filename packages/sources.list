@@ -1,0 +1,32 @@
+# Основной репозиторий
+deb http://repo.fs.fsight.world/1.7_x86-64/repository-main 1.7_x86-64 main contrib non-free
+# Оперативные обновления основного репозитория
+deb http://repo.fs.fsight.world/1.7_x86-64/repository-update 1.7_x86-64 main contrib non-free
+# Базовый репозиторий
+deb http://repo.fs.fsight.world/1.7_x86-64/repository-base 1.7_x86-64 main contrib non-free
+# Базовый репозиторий UU
+deb http://repo.fs.fsight.world/1.7_x86-64/uu/last/repository-base 1.7_x86-64 main contrib non-free
+# Последнее срочное обновление UU (если доступно):
+deb http://repo.fs.fsight.world/1.7_x86-64/uu/last/repository-update/ 1.7_x86-64 main contrib non-free
+# Расширенный репозиторий
+deb http://repo.fs.fsight.world/1.7_x86-64/repository-extended 1.7_x86-64 main contrib non-free
+
+# Расширенный репозиторий (компонент astra-ce)
+#deb http://repo.fs.fsight.world/1.7_x86-64/repository-extended 1.7_x86-64 astra-ce
+
+#===================================================== WEB =====================================================
+# Основной репозиторий
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-main/ 1.7_x86-64 main contrib non-free
+# Оперативные обновления основного репозитория
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-update/ 1.7_x86-64 main contrib non-free
+# Базовый репозиторий
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-base/ 1.7_x86-64 main contrib non-free
+# Базовый репозиторий UU
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/uu/last/repository-base 1.7_x86-64 main contrib non-free
+# Последнее срочное обновление UU (если доступно):
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/uu/last/repository-update/ 1.7_x86-64 main contrib non-free
+# Расширенный репозиторий
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free
+
+# Расширенный репозиторий (компонент astra-ce)
+#deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 astra-ce
