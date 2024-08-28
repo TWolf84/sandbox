@@ -3,8 +3,6 @@ FROM $ASTRA_LINUX
 
 ENV TZ=Europe/Moscow
 
-ARG BI_PACKAGE
-ADD packages/$BI_PACKAGE /tmp/
 #ADD packages/libpq5*.deb /tmp/
 COPY packages/sources.list /etc/apt/
 
@@ -35,9 +33,7 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  apt-get install -y qt5-image-formats-plugins && \
  apt-get install -y libatomic1 && \
  apt-get install -y libtiff5 && \
- apt-get install -y apache2 && \
  apt-get install -y libjpeg62-turbo && \
- apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
  apt-get install -y postgresql-client && \
     #apt-get install -y -qq /tmp/libpq5*.deb && \
  apt-get install -y nano && \
@@ -45,6 +41,15 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  apt-get install -y python3-pip && \
  apt-get clean all && \
  pip3 install PyYAML && \
+ rm -f /tmp/*
+
+ARG BI_PACKAGE
+ADD packages/$BI_PACKAGE /tmp/
+
+RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
+ apt-get install -y apache2 && \
+ apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
+ apt-get clean all && \
  echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
  locale-gen && \
@@ -53,15 +58,19 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
 
 ARG BI_OPT_DIR
 ENV BI_OPT_DIR $BI_OPT_DIR
+ARG BI_CFG_DIR
+ENV BI_CFG_DIR $BI_CFG_DIR
 ARG BI_ETC_DIR
 ENV BI_ETC_DIR $BI_ETC_DIR
 ARG BI_ETC_CTL
 ENV BI_ETC_CTL $BI_ETC_CTL
+ARG BI_RM4_RES
 
+ADD packages/$BI_RM4_RES /opt/foresight/$BI_OPT_DIR/bin/current.rm4
 ADD bi/distr/lsmon /opt/foresight/$BI_OPT_DIR/bin/lsmon
-ADD bi/distr/project.tpl /opt/foresight/$BI_OPT_DIR/bin/project.tpl
-ADD bi/distr/host.tpl /opt/foresight/$BI_OPT_DIR/bin/host.tpl
-ADD bi/distr/registry.reg /opt/foresight/$BI_OPT_DIR/bin/registry.reg
+ADD bi/distr/project.tpl /opt/foresight/$BI_CFG_DIR/project.tpl
+ADD bi/distr/host.tpl /opt/foresight/$BI_CFG_DIR/host.tpl
+ADD bi/distr/registry.reg /opt/foresight/$BI_CFG_DIR/registry.reg
 ADD scripts/repos_to_config.py /usr/bin/
 ADD scripts/xvfb-run /usr/bin/
 ADD bi/distr/startup.sh /usr/bin/
@@ -79,16 +88,17 @@ ENV FP_USER_AUDIT $FP_USER_AUDIT
 ENV PGPASSWORD $FP_USER
 ARG SS_HOST
 ARG FP_RELEASE
+ENV FP_RELEASE $FP_RELEASE
 
-RUN ln -s /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
+RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
     chmod +x /opt/foresight/$BI_OPT_DIR/bin/lsmon && \
-    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
-    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
-    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
-    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
-    sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/registry.reg && \
-    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_OPT_DIR/bin/project.tpl && \
-    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_OPT_DIR/bin/host.tpl && \
+    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/project.tpl && \
+    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/host.tpl && \
     sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
     chown -R www-data:www-data /opt/foresight && \
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \
@@ -96,7 +106,8 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/li
     sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
     sed -i -e 's/\r$//' /usr/bin/startup.sh
 
-EXPOSE 8809
+ARG BI_PORT
+EXPOSE $BI_PORT
 
 # Uncomment some lines below (with export) to extend log
 # Extended debug log (stderr)

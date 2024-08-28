@@ -37,10 +37,13 @@ services:
       dockerfile: bi/Dockerfile
       args:
         <<: *image
-        BI_PACKAGE: ${BI_PACKAGE}
-        BI_OPT_DIR: ${BI_OPT_DIR}
-        BI_ETC_DIR: ${BI_ETC_DIR}
-        BI_ETC_CTL: ${BI_ETC_CTL}
+        BI_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-biserver*.deb
+        BI_RM4_RES: ${FP_PACKAGE}/current.rm4
+        BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
+        BI_CFG_DIR: fp${FP_RELEASE}.x-biserver/${BI_CFG_DIR:-bin}
+        BI_ETC_DIR: apache2-fp${FP_RELEASE}.x
+        BI_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x
+        BI_PORT: ${BI_PORT}
         FP_RELEASE: ${FP_RELEASE}
         FP_USER: ${FP_USER}
         FP_REPO: ${FP_REPO}
@@ -49,7 +52,7 @@ services:
         DB_HOST: pg
         SS_HOST: redis
     ports: 
-      - "8809:8809"
+      - "${BI_PORT}:${BI_PORT}"
     links:
       - pg
       - redis
@@ -66,19 +69,21 @@ services:
       dockerfile: dba/Dockerfile
       args:
         <<: *image
-        WEB_PACKAGE: ${WEB_PACKAGE}
-        WEB_DBA_ZIP: ${WEB_DBA_ZIP}
-        WEB_APP_DIR: ${WEB_APP_DIR}
-        WEB_DBA_DIR: ${WEB_DBA_DIR}
-        WEB_ETC_DIR: ${WEB_ETC_DIR}
-        WEB_ETC_CTL: ${WEB_ETC_CTL}
-        WEB_APP_URI: ${WEB_APP_URI}
+        WEB_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-webserver*.deb
+        WEB_DBA_ZIP: ${FP_PACKAGE}/DBA.zip
+        WEB_APP_DIR: fp${FP_RELEASE}.x-webserver
+        WEB_DBA_DIR: fp${FP_RELEASE}.x-dba
+        WEB_ETC_DIR: apache2-fp${FP_RELEASE}.x-web
+        WEB_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x-web
+        WEB_APP_URI: fp${FP_RELEASE}.x
+        WEB_PORT: ${WEB_PORT}
         FP_REPO: ${FP_REPO}
         FP_APP: ${FP_APP}
         BI_HOST: bi
-        BI_SERVICE: ${BI_SERVICE}
+        BI_PORT: ${BI_PORT}
+        BI_SERVICE: FPBI_App_v${FP_RELEASE}.x/axis2/services/PP.SOM.Som
     ports:
-      - "8109:8109"
+      - "${WEB_PORT}:${WEB_PORT}"
     links:
       - bi
     depends_on:
@@ -91,8 +96,8 @@ services:
       dockerfile: scheduler/Dockerfile
       args:
         <<: *image
-        BI_PACKAGE: ${BI_PACKAGE}
-        BI_OPT_DIR: ${BI_OPT_DIR}
+        BI_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-biserver*.deb
+        BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
         FP_USER: ${FP_USER}
         FP_REPO: ${FP_REPO}
         FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}

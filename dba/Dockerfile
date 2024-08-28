@@ -35,6 +35,7 @@ ADD dba/distr/DBA.config.json /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json
 ADD dba/distr/startup.sh /usr/bin/startup.sh
 
 ARG BI_HOST
+ARG BI_PORT
 ARG BI_SERVICE
 ARG FP_REPO
 ARG FP_APP
@@ -42,12 +43,14 @@ ARG WEB_APP_URI
 ENV WEB_APP_URI $WEB_APP_URI
 ENV PATH_TO_WEB /opt/foresight/$WEB_APP_DIR
 ENV PATH_TO_DBA /opt/foresight/$WEB_DBA_DIR
-ENV PP_SOM http://$BI_HOST:8809/$BI_SERVICE
+ENV PP_SOM http://$BI_HOST:$BI_PORT/$BI_SERVICE
+ARG WEB_PORT
+ENV WEB_PORT $WEB_PORT
 
 RUN sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$WEB_ETC_DIR/apache2.conf && \
  sed -i 's/^ PP_SOM=.*//g' /etc/opt/foresight/$WEB_APP_DIR/envvars && \
  echo ' PATH_TO_DBA=/opt/foresight/'$WEB_DBA_DIR >> /etc/opt/foresight/$WEB_APP_DIR/envvars && \
- echo ' PP_SOM=http://'$BI_HOST':8809/'$BI_SERVICE >> /etc/opt/foresight/$WEB_APP_DIR/envvars && \
+ echo ' PP_SOM=http://'$BI_HOST':'$BI_PORT'/'$BI_SERVICE >> /etc/opt/foresight/$WEB_APP_DIR/envvars && \
  sed -i 's/${WEB_APP_URI}/'$WEB_APP_URI'/g' /opt/foresight/$WEB_APP_DIR/config/PP.xml && \
  sed -i 's/${BI_HOST}/'$BI_HOST'/g' /opt/foresight/$WEB_APP_DIR/config/PP.xml && \
  sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$WEB_APP_DIR/config/PP.xml && \
@@ -56,6 +59,6 @@ RUN sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$WEB_ETC_DIR/apache2.conf
  sed -i 's/${FP_APP}/'$FP_APP'/g' /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json && \
  sed -i -e 's/\r$//' /usr/bin/startup.sh
 
-EXPOSE 8109
+EXPOSE $WEB_PORT
 
 CMD ["/bin/bash", "-c", "/usr/bin/startup.sh"]

@@ -1,16 +1,16 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\PP\BIS\System\Session]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PP\BIS\System\Session]
 "KeyIncr"="0"
 "Statable"="Yes"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\PP\BIS\System\StateServer]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PP\BIS\System\StateServer]
 "Type"="Redis"
 "Host"="${SS_HOST}"
 "Port"="6379"
 "ExpireTime"="3600"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${FP_REPO}]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${FP_REPO}]
 "Name"="${FP_REPO}"
 "Driver"="POSTGRES"
 "Package"="STANDARDSECURITYPACKAGE"
@@ -31,7 +31,7 @@ Windows Registry Editor Version 5.00
 "PingTimeout"=dword:0000ea60
 "CachedTables"="OBJ;DAT;SD;PAR;MOD;SCSH"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${FP_REPO}\LogonData]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${FP_REPO}\LogonData]
 "SERVER"="8:${DB_HOST}"
 "DATABASE"="8:${FP_REPO}.${FP_REPO_SCHEMA}"
 "PROVIDER"="8:"

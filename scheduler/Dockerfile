@@ -3,13 +3,10 @@ FROM $ASTRA_LINUX
 
 ENV TZ=Europe/Moscow
 
-ARG BI_PACKAGE
-ADD packages/$BI_PACKAGE /tmp/
 ADD packages/libpq5*.deb /tmp/
 COPY packages/sources.list /etc/apt/
 
-RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
- apt-get update && \
+RUN apt-get update && \
  apt dist-upgrade -y && \
  apt-get install -y locales && \
  apt-get install -y strace && \
@@ -35,10 +32,17 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  apt-get install -y libatomic1 && \
  apt-get install -y libtiff5 && \
  apt-get install -y libjpeg62-turbo && \
- apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
  apt-get install -y -qq /tmp/libpq5*.deb && \
  apt-get install -y nano && \
  apt-get install -y less && \
+ apt-get clean all && \
+ rm -f /tmp/*
+
+ARG BI_PACKAGE
+ADD packages/$BI_PACKAGE /tmp/
+
+RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
+ apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
  apt-get clean all && \
  echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
@@ -63,7 +67,7 @@ ENV FP_USER_AUDIT $FP_USER_AUDIT
 ARG FP_CONTAINER_KEY
 ARG FP_CONTAINER_ID
 
-RUN ln -s /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
+RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
  chown -R www-data:www-data /opt/foresight && \
  useradd -m -s /bin/bash scheduler && \
  usermod -aG www-data scheduler && \

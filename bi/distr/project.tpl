@@ -1,4 +1,4 @@
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${project}]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${project}]
 "Name"="${project_name}"
 "Driver"="POSTGRES"
 "Package"="STANDARDSECURITYPACKAGE"
@@ -19,7 +19,7 @@
 "PingTimeout"=dword:0000ea60
 "CachedTables"=""
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}\Metabases\${project}\LogonData]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${project}\LogonData]
 "SERVER"="8:${project.host}"
 "DATABASE"="8:${project.db}.${project.scheme}"
 "PROVIDER"="8:"

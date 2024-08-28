@@ -18,8 +18,10 @@ elif [ "$1" == "-vmas" ]; then
 fi
 
 # BI audit user
+echo && echo Set BI audit user...
 xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac /scope hklm "$DB_HOST|POSTGRES" $FP_USER_AUDIT $FP_USER_AUDIT
 
 # Scheduler service start
+echo && echo Start Scheduler...
 cd /opt/foresight/$BI_OPT_DIR/bin
 xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/Scheduler -p /run/scheduler

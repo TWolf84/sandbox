@@ -17,18 +17,26 @@ elif [ "$1" == "-vmas" ]; then
   WRAP="valgrind -v --tool=massif --log-file=massif.log --depth=30 --threshold=1.0 --ignore-fn='QByteArray::resize(int)'"
 fi
 
-# BI repository
-xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/RepoManager -ocreate-repo -tpostgres -s$DB_HOST -d$FP_REPO -m$FP_REPO_SCHEMA -u$FP_USER -w$FP_USER -fresource -i
-cd /usr/bin
-python3 -m repos_to_config "/repositories" "/opt/foresight/"$BI_OPT_DIR"/bin/registry.reg" "/opt/foresight/"$BI_OPT_DIR"/bin"
-
 # BI audit user
-psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "GRANT SELECT ON TABLE $FP_REPO_SCHEMA.b_jlo TO \"$FP_USER_AUDIT\";"
-psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "insert into md.b_sec_dat (vs, dat, id) values('$FP_USER_AUDIT', 1, 'AUDITOR');"
-xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac /scope hklm "$DB_HOST|POSTGRES" $FP_USER_AUDIT $FP_USER_AUDIT
+echo && echo Set BI audit user...
+if [ "$FP_RELEASE" == "10" ]; then
+  xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /cau $FP_REPO $FP_USER $FP_USER $FP_USER_AUDIT $FP_USER_AUDIT
+elif [ "$FP_RELEASE" == "9" ]; then
+  psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "GRANT SELECT ON TABLE $FP_REPO_SCHEMA.b_jlo TO \"$FP_USER_AUDIT\";"
+  psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "insert into md.b_sec_dat (vs, dat, id) values('$FP_USER_AUDIT', 1, 'AUDITOR');"
+fi
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac /DC $FP_USER_AUDIT $FP_USER_AUDIT
 
 # BI cache tables user
+echo && echo Set BI cache tables user...
 xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sc $FP_REPO $FP_USER $FP_USER "MBCACHE"
 
+# BI repository
+echo && echo Set BI repositories...
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/RepoManager -ocreate-repo -tpostgres -s$DB_HOST -d$FP_REPO -m$FP_REPO_SCHEMA -u$FP_USER -w$FP_USER -f/opt/foresight/$BI_OPT_DIR/bin/current.rm4 -i
+cd /usr/bin
+python3 -m repos_to_config "/repositories" "/opt/foresight/"$BI_CFG_DIR"/registry.reg" "/opt/foresight/"$BI_CFG_DIR
+
 # BI-server start
+echo && echo Start BI...
 xvfb-run -l -n $XNUM -s "$XARG" $WRAP /usr/local/sbin/$BI_ETC_CTL -D FOREGROUND -d /etc/$BI_ETC_DIR/

@@ -14,6 +14,7 @@ ARG FP_USER_AUDIT
 USER postgres
 RUN /etc/init.d/postgresql start \
   && psql --command "CREATE ROLE \"$FP_USER\" LOGIN ENCRYPTED PASSWORD '$FP_USER' NOSUPERUSER INHERIT NOCREATEDB CREATEROLE NOREPLICATION;" \
+  && psql --command "CREATE ROLE \"$FP_USER_AUDIT\" WITH LOGIN NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION ENCRYPTED PASSWORD '$FP_USER_AUDIT';" \
   && psql --command "CREATE DATABASE \"$FP_REPO\" WITH OWNER = \"$FP_USER\" ENCODING = 'UTF8' TABLESPACE = pg_default  LC_COLLATE = default LC_CTYPE = default CONNECTION LIMIT = -1;" \
   && psql --command "ALTER DATABASE \"$FP_REPO\" SET lo_compat_privileges = 'on';" \
   && psql --command "GRANT ALL ON DATABASE \"$FP_REPO\" TO \"$FP_USER\";" \
@@ -26,11 +27,10 @@ RUN /etc/init.d/postgresql start \
   && psql -d $FP_REPO --command "CREATE CAST (lo AS oid) WITHOUT FUNCTION AS IMPLICIT;" \
   && psql -d $FP_REPO --command "CREATE CAST (oid AS lo) WITHOUT FUNCTION AS IMPLICIT;" \
   && psql -d $FP_REPO --command "CREATE OR REPLACE FUNCTION lo_manage() RETURNS pg_catalog.trigger AS '\$libdir/lo' LANGUAGE C;" \
-  && psql --command "CREATE ROLE \"$FP_USER_AUDIT\" WITH LOGIN NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION ENCRYPTED PASSWORD '$FP_USER_AUDIT';" \
   && psql -d $FP_REPO --command "GRANT CONNECT ON DATABASE \"$FP_REPO\" to \"$FP_USER_AUDIT\";" \
   && psql -d $FP_REPO --command "GRANT USAGE ON SCHEMA \"$FP_REPO_SCHEMA\" to \"$FP_USER_AUDIT\";"
   #&& psql -d $FP_REPO --command "GRANT SELECT ON TABLE $FP_REPO_SCHEMA.b_jlo TO \"$FP_USER_AUDIT\";" \
-  #&& psql -d $FP_REPO --command "insert into $FP_REPO_SCHEMA.b_sec_dat (vs, dat, id) values('$FP_USER_AUDIT', 1, 'AUDITOR');"\
+  #&& psql -d $FP_REPO --command "insert into $FP_REPO_SCHEMA.b_sec_dat (vs, dat, id) values('$FP_USER_AUDIT', 1, 'AUDITOR');"
 
 ARG PG_LOG_STATEMENT
 ENV PG_LOG_STATEMENT $PG_LOG_STATEMENT
