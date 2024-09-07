@@ -100,6 +100,8 @@ RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/l
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/project.tpl && \
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/host.tpl && \
     sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
+    echo 'export LANG=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
+    echo 'export LC_ALL=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
     chown -R www-data:www-data /opt/foresight && \
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/error.log && \
