@@ -17,4 +17,6 @@ RUN sed -i 's/${SS_LOG_LEVEL}/'$SS_LOG_LEVEL'/g' /etc/redis/redis.conf && \
 EXPOSE 6379
 
 USER redis
-CMD [ "/usr/bin/redis-server", "/etc/redis/redis.conf" ]
+
+CMD /usr/bin/redis-server /etc/redis/redis.conf --daemonize yes && \
+    redis-cli monitor
