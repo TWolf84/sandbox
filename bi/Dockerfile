@@ -56,6 +56,15 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  update-locale ru_RU.UTF-8 && \
  rm -f /tmp/*
 
+ADD packages/clickhouse-odbc-1.2.1-Linux.tar.gz /tmp/
+ADD packages/libicudata.so.50 /usr/local/lib
+ADD packages/libicuuc.so.50 /usr/local/lib
+RUN apt-get install -y openssl unixodbc && \
+ cp -r /tmp/clickhouse-odbc-1.2.1-Linux/* /usr/local && \
+ odbcinst -i -d -f /usr/local/share/doc/clickhouse-odbc/config/odbcinst.ini.sample && \
+ odbcinst -i -s -l -f /usr/local/share/doc/clickhouse-odbc/config/odbc.ini.sample && \
+ rm -rf /tmp/*
+
 ARG BI_OPT_DIR
 ENV BI_OPT_DIR $BI_OPT_DIR
 ARG BI_CFG_DIR
@@ -67,13 +76,13 @@ ENV BI_ETC_CTL $BI_ETC_CTL
 ARG BI_RM4_RES
 
 ADD packages/$BI_RM4_RES /opt/foresight/$BI_OPT_DIR/bin/current.rm4
-ADD bi/distr/lsmon /opt/foresight/$BI_OPT_DIR/bin/lsmon
 ADD bi/distr/project.tpl /opt/foresight/$BI_CFG_DIR/project.tpl
 ADD bi/distr/host.tpl /opt/foresight/$BI_CFG_DIR/host.tpl
 ADD bi/distr/registry.reg /opt/foresight/$BI_CFG_DIR/registry.reg
 ADD scripts/repos_to_config.py /usr/bin/
 ADD scripts/xvfb-run /usr/bin/
 ADD bi/distr/startup.sh /usr/bin/
+ADD bi/distr/lsmon /usr/bin/lsmon
 
 ARG FP_USER
 ENV FP_USER $FP_USER
@@ -89,14 +98,17 @@ ENV PGPASSWORD $FP_USER
 ARG SS_HOST
 ARG FP_RELEASE
 ENV FP_RELEASE $FP_RELEASE
+ARG BI_PORT_WS
+ENV BI_PORT_WS $BI_PORT_WS
 
 RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
-    chmod +x /opt/foresight/$BI_OPT_DIR/bin/lsmon && \
+    ln -sf /usr/lib/x86_64-linux-gnu/libodbc.so.1 /opt/foresight/$BI_OPT_DIR/bin/libodbc.so && \
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
     sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
     sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
     sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
     sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${BI_PORT_WS}/'$BI_PORT_WS'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/project.tpl && \
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/host.tpl && \
     sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
@@ -106,7 +118,8 @@ RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/l
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \
     ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/error.log && \
     sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
-    sed -i -e 's/\r$//' /usr/bin/startup.sh
+    sed -i -e 's/\r$//' /usr/bin/startup.sh && \
+    chmod +x /usr/bin/lsmon
 
 ARG BI_PORT
 EXPOSE $BI_PORT
@@ -114,6 +127,9 @@ EXPOSE $BI_PORT
 # Uncomment some lines below (with export) to extend log
 # Extended debug log (stderr)
 ENV PP_LOG 1
+ENV PP_LOGTIME 1
+ENV PP_LOGDATE 1
+
 # Not implemented calls (BREAK for SIGTRAP)
 #ENV PP_NOIMPLBREAK 1
 # Gdiplus debug info

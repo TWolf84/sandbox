@@ -19,7 +19,13 @@ fi
 
 # BI audit user
 echo && echo Set BI audit user...
-xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac /scope hklm "$DB_HOST|POSTGRES" $FP_USER_AUDIT $FP_USER_AUDIT
+if [ "$FP_RELEASE" == "10" ]; then
+  xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /cau $FP_REPO $FP_USER $FP_USER $FP_USER_AUDIT $FP_USER_AUDIT
+elif [ "$FP_RELEASE" == "9" ]; then
+  psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "GRANT SELECT ON TABLE $FP_REPO_SCHEMA.b_jlo TO \"$FP_USER_AUDIT\";"
+  psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "insert into md.b_sec_dat (vs, dat, id) values('$FP_USER_AUDIT', 1, 'AUDITOR');"
+fi
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "$DB_HOST|POSTGRES" $FP_USER_AUDIT $FP_USER_AUDIT
 
 # Scheduler service start
 echo && echo Start Scheduler...

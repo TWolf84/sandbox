@@ -1,24 +1,7 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PoolTrace]
-@="0"
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PP\BIS\System\Session]
-"KeyIncr"="0"
-"Statable"="Yes"
-"SecureSession"="0"
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PP\BIS\System\Dal]
-"Allow"="1"
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PP\BIS\System\StateServer]
-"Type"="Redis"
-"Host"="${SS_HOST}"
-"Port"="6379"
-"ExpireTime"="3600"
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\PP\BIS\System\WebForms]
-"Port"="${BI_PORT_WS}"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Scheduler]
+"Trace"=dword:00000003
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${FP_REPO}]
 "Name"="${FP_REPO}"
@@ -39,7 +22,7 @@ Windows Registry Editor Version 5.00
 "CusEv"=dword:00000000
 "UCL"=dword:00000000
 "PingTimeout"=dword:0000ea60
-"CachedTables"="OBJ;DAT;SD;PAR;MOD;SCSH"
+"CachedTables"=""
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${FP_REPO}\LogonData]
 "SERVER"="8:${DB_HOST}"

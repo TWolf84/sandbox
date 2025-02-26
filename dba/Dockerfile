@@ -35,6 +35,9 @@ ADD dba/distr/DBA.config.json /opt/foresight/$WEB_DBA_DIR/config/DBA.config.json
 ADD dba/distr/startup.sh /usr/bin/startup.sh
 
 ARG BI_HOST
+ENV BI_HOST $BI_HOST
+ARG BI_PORT_WS
+ENV BI_PORT_WS $BI_PORT_WS
 ARG BI_PORT
 ARG BI_SERVICE
 ARG FP_REPO
@@ -46,6 +49,8 @@ ENV PATH_TO_DBA /opt/foresight/$WEB_DBA_DIR
 ENV PP_SOM http://$BI_HOST:$BI_PORT/$BI_SERVICE
 ARG WEB_PORT
 ENV WEB_PORT $WEB_PORT
+ARG WEB_PORT_WS
+ENV WEB_PORT_WS $WEB_PORT_WS
 
 RUN sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$WEB_ETC_DIR/apache2.conf && \
  sed -i 's/^ PP_SOM=.*//g' /etc/opt/foresight/$WEB_APP_DIR/envvars && \

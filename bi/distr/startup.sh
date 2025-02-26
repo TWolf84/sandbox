@@ -25,11 +25,22 @@ elif [ "$FP_RELEASE" == "9" ]; then
   psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "GRANT SELECT ON TABLE $FP_REPO_SCHEMA.b_jlo TO \"$FP_USER_AUDIT\";"
   psql -h $DB_HOST -d $FP_REPO -U $FP_USER -w -c "insert into md.b_sec_dat (vs, dat, id) values('$FP_USER_AUDIT', 1, 'AUDITOR');"
 fi
-xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac /DC $FP_USER_AUDIT $FP_USER_AUDIT
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "$DB_HOST|POSTGRES" $FP_USER_AUDIT $FP_USER_AUDIT
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "10.30.239.31|POSTGRES" "FP_ADMIN" "FP_ADMIN"
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "10.30.239.11|POSTGRES" "FP_ADMIN" "FP_ADMIN"
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "10.30.239.33:5434|POSTGRES" "FP_ADMIN" "FP_ADMIN"
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "10.30.29.10|POSTGRES" "KHD_AUDIT" "KHD_AUDIT"
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "10.30.45.12|POSTGRES" "AUDIT" "AUDIT"
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sac "10.30.66.11|POSTGRES" "FSAUDIT" "FSAUDIT"
 
 # BI cache tables user
-echo && echo Set BI cache tables user...
-xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sc $FP_REPO $FP_USER $FP_USER "MBCACHE"
+# echo && echo Set BI cache tables user...
+#xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sc $FP_REPO $FP_USER $FP_USER "MBCACHE"
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /sc KHD_DEV KHD_DEV KHD_DEV MBCACHE
+
+# BI create SvcLog tables
+echo && echo Create SvcLog tables...
+xvfb-run -l -n $XNUM -s "$XARG" $WRAP /opt/foresight/$BI_OPT_DIR/bin/PP.Util /create_svclog_tables $FP_REPO $FP_REPO $FP_USER $FP_USER $FP_USER $FP_USER
 
 # BI repository
 echo && echo Set BI repositories...

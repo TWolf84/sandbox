@@ -52,13 +52,22 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
 
 ARG BI_OPT_DIR
 ENV BI_OPT_DIR $BI_OPT_DIR
+ARG BI_CFG_DIR
+ENV BI_CFG_DIR $BI_CFG_DIR
 
+ADD scheduler/distr/registry.reg /opt/foresight/$BI_CFG_DIR/registry.reg
 ADD scheduler/distr/scheduler.xml /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml
 ADD scripts/xvfb-run /usr/bin/
 ADD scheduler/distr/startup.sh /usr/bin/startup.sh
 
+ARG FP_RELEASE
+ENV FP_RELEASE $FP_RELEASE
 ARG FP_USER
+ENV FP_USER $FP_USER
+ARG FP_USER_2
+ENV FP_USER_2 $FP_USER_2
 ARG FP_REPO
+ENV FP_REPO $FP_REPO
 ARG FP_REPO_SCHEMA
 ARG DB_HOST
 ENV DB_HOST $DB_HOST
@@ -68,23 +77,30 @@ ARG FP_CONTAINER_KEY
 ARG FP_CONTAINER_ID
 
 RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
- chown -R www-data:www-data /opt/foresight && \
- useradd -m -s /bin/bash scheduler && \
- usermod -aG www-data scheduler && \
- mkdir /run/scheduler && \
- chown scheduler:www-data /run/scheduler && \
- sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i 's/${FP_USER}/'$FP_USER'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i 's/${FP_CONTAINER_KEY}/'$FP_CONTAINER_KEY'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i 's/${FP_CONTAINER_ID}/'$FP_CONTAINER_ID'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
- sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
- sed -i -e 's/\r$//' /usr/bin/startup.sh
+    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_DIR/registry.reg && \
+    chown -R www-data:www-data /opt/foresight && \
+    useradd -m -s /bin/bash scheduler && \
+    usermod -aG www-data scheduler && \
+    mkdir /run/scheduler && \
+    chown scheduler:www-data /run/scheduler && \
+    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+    sed -i 's/${FP_USER_2}/'$FP_USER_2'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+    sed -i 's/${FP_CONTAINER_KEY}/'$FP_CONTAINER_KEY'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+    sed -i 's/${FP_CONTAINER_ID}/'$FP_CONTAINER_ID'/g' /opt/foresight/$BI_OPT_DIR/bin/scheduler.xml && \
+    sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
+    sed -i -e 's/\r$//' /usr/bin/startup.sh
 
 # Uncomment some lines below (with export) to extend log
 # Extended debug log (stderr)
 ENV PP_LOG 1
+ENV PP_LOGTIME 1
+ENV PP_LOGDATE 1
+
 # Not implemented calls (BREAK for SIGTRAP)
 #ENV PP_NOIMPLBREAK 1
 # Gdiplus debug info

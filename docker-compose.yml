@@ -44,6 +44,7 @@ services:
         BI_ETC_DIR: apache2-fp${FP_RELEASE}.x
         BI_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x
         BI_PORT: ${BI_PORT}
+        BI_PORT_WS: ${BI_PORT_WS}
         FP_RELEASE: ${FP_RELEASE}
         FP_USER: ${FP_USER}
         FP_REPO: ${FP_REPO}
@@ -53,6 +54,7 @@ services:
         SS_HOST: redis
     ports: 
       - "${BI_PORT}:${BI_PORT}"
+      - "${BI_PORT_WS}:${BI_PORT_WS}"
     links:
       - pg
       - redis
@@ -77,13 +79,16 @@ services:
         WEB_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x-web
         WEB_APP_URI: fp${FP_RELEASE}.x
         WEB_PORT: ${WEB_PORT}
+        WEB_PORT_WS: ${WEB_PORT_WS}
         FP_REPO: ${FP_REPO}
         FP_APP: ${FP_APP}
         BI_HOST: bi
         BI_PORT: ${BI_PORT}
+        BI_PORT_WS: ${BI_PORT_WS}
         BI_SERVICE: FPBI_App_v${FP_RELEASE}.x/axis2/services/PP.SOM.Som
     ports:
       - "${WEB_PORT}:${WEB_PORT}"
+      - "${WEB_PORT_WS}:${WEB_PORT_WS}"
     links:
       - bi
     depends_on:
@@ -98,7 +103,10 @@ services:
         <<: *image
         BI_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-biserver*.deb
         BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
+        BI_CFG_DIR: fp${FP_RELEASE}.x-biserver/${BI_CFG_DIR:-bin}
+        FP_RELEASE: ${FP_RELEASE}
         FP_USER: ${FP_USER}
+        FP_USER_2: ${FP_USER_2}
         FP_REPO: ${FP_REPO}
         FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
         FP_USER_AUDIT: ${FP_USER_AUDIT}
