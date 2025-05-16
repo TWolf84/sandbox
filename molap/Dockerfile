@@ -81,6 +81,7 @@ ARG BI_CFG_REG
 ENV BI_CFG_REG $BI_CFG_REG
 ARG FP_RELEASE
 ENV FP_RELEASE $FP_RELEASE
+ARG BI_PORT
 
 #ADD bi/distr/registry.reg /opt/foresight/$BI_CFG_REG/registry.reg
 ADD bi/distr/project.tpl /opt/foresight/$BI_CFG_REG/project.tpl
@@ -92,10 +93,9 @@ RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/l
 #    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
 #    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
 #    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
-#    sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
-#    sed -i 's/${BI_PORT_WS}/'$BI_PORT_WS'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/project.tpl && \
     sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/host.tpl && \
+    sed -i 's/8810/'$BI_PORT'/g' /etc/$BI_ETC_DIR/ports.conf && \
     sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
     echo 'export LANG=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
     echo 'export LC_ALL=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
@@ -118,23 +118,17 @@ ENV DB_HOST $DB_HOST
 ARG FP_USER_AUDIT
 ENV FP_USER_AUDIT $FP_USER_AUDIT
 ENV PGPASSWORD $FP_USER
-ARG SS_HOST
-ARG BI_PORT_WS
-ENV BI_PORT_WS $BI_PORT_WS
 
 ADD scripts/repos_to_config.py /usr/bin/
-ADD bi/distr/settings.xml /opt/foresight/$BI_CFG_XML/settings.xml
+ADD molap/distr/settings.xml /opt/foresight/$BI_CFG_XML/settings.xml
 ADD bi/distr/metabases.xml /opt/foresight/$BI_CFG_XML/Metabases.xml
-RUN sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_CFG_XML/settings.xml && \
-    sed -i 's/${BI_PORT_WS}/'$BI_PORT_WS'/g' /opt/foresight/$BI_CFG_XML/settings.xml && \
-    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml && \
+RUN sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml && \
     sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml && \
     sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml
 
 ADD bi/distr/startup.sh /usr/bin/
 RUN sed -i -e 's/\r$//' /usr/bin/startup.sh
 
-ARG BI_PORT
 EXPOSE $BI_PORT
 
 # Uncomment some lines below (with export) to extend log

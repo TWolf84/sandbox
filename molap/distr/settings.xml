@@ -1,0 +1,11 @@
+<Configuration>
+    <Root>
+        <Key Name="PP">
+            <BIS>
+                <Key Name="System">
+                    <Session KeyIncr="0" Statable="Yes" SecureSession="0" />
+                </Key>
+            </BIS>
+        </Key>
+    </Root>
+</Configuration>

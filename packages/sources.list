@@ -12,7 +12,7 @@ deb http://repo.fs.fsight.world/1.7_x86-64/uu/last/repository-update/ 1.7_x86-64
 deb http://repo.fs.fsight.world/1.7_x86-64/repository-extended 1.7_x86-64 main contrib non-free
 
 # Расширенный репозиторий (компонент astra-ce)
-#deb http://repo.fs.fsight.world/1.7_x86-64/repository-extended 1.7_x86-64 astra-ce
+deb http://repo.fs.fsight.world/1.7_x86-64/repository-extended 1.7_x86-64 astra-ce
 
 #===================================================== WEB =====================================================
 # Основной репозиторий

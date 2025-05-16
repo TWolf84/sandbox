@@ -40,7 +40,8 @@ services:
         BI_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-biserver*.deb
         BI_RM4_RES: ${FP_PACKAGE}/current.rm4
         BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
-        BI_CFG_DIR: fp${FP_RELEASE}.x-biserver/${BI_CFG_DIR:-bin}
+        BI_CFG_XML: fp${FP_RELEASE}.x-biserver/${BI_CFG_XML:-bin}
+        BI_CFG_REG: fp${FP_RELEASE}.x-biserver/${BI_CFG_REG:-bin}
         BI_ETC_DIR: apache2-fp${FP_RELEASE}.x
         BI_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x
         BI_PORT: ${BI_PORT}
@@ -51,13 +52,48 @@ services:
         FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
         FP_USER_AUDIT: ${FP_USER_AUDIT}
         DB_HOST: pg
-        SS_HOST: redis
+        #SS_HOST: redis
     ports: 
       - "${BI_PORT}:${BI_PORT}"
       - "${BI_PORT_WS}:${BI_PORT_WS}"
     links:
       - pg
-      - redis
+      #- redis
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    configs:
+      - repositories
+  molap:
+    environment:
+      - LSHOST
+    build:
+      context: /
+      dockerfile: molap/Dockerfile
+      args:
+        <<: *image
+        BI_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-biserver*.deb
+        BI_RM4_RES: ${FP_PACKAGE}/current.rm4
+        BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
+        BI_CFG_XML: fp${FP_RELEASE}.x-biserver/${BI_CFG_XML:-bin}
+        BI_CFG_REG: fp${FP_RELEASE}.x-biserver/${BI_CFG_REG:-bin}
+        BI_ETC_DIR: apache2-fp${FP_RELEASE}.x
+        BI_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x
+        BI_PORT: ${MOLAP_PORT}
+        FP_RELEASE: ${FP_RELEASE}
+        FP_USER: ${FP_USER}
+        FP_REPO: ${FP_REPO}
+        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
+        FP_USER_AUDIT: ${FP_USER_AUDIT}
+        DB_HOST: pg
+        #SS_HOST: redis
+    ports:
+      - "${MOLAP_PORT}:${MOLAP_PORT}"
+    links:
+      - pg
+      #- redis
     depends_on:
       pg:
         condition: service_healthy

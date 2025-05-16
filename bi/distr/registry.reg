@@ -29,7 +29,7 @@ Windows Registry Editor Version 5.00
 "Crs"=""
 "Crsa"=""
 "CrLP"="1"
-"DebugMode"="1"
+"DebugMode"="0"
 "CompileAssemblyOnly"="0"
 "MetabaseConnectForAuditModeEx"=dword:00000001
 "UseOldComplexPassword"=dword:00000000
@@ -39,7 +39,7 @@ Windows Registry Editor Version 5.00
 "CusEv"=dword:00000000
 "UCL"=dword:00000000
 "PingTimeout"=dword:0000ea60
-"CachedTables"="OBJ;DAT;SD;PAR;MOD;SCSH"
+"CachedTables"="OBJ;DAT;SD;PAR;SCSH"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Foresight\Foresight Analytics Platform\${FP_RELEASE}.0\Metabases\${FP_REPO}\LogonData]
 "SERVER"="8:${DB_HOST}"
