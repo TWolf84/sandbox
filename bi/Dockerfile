@@ -43,18 +43,21 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  pip3 install PyYAML && \
  rm -f /tmp/*
 
-ARG BI_PACKAGE
-ADD packages/$BI_PACKAGE /tmp/
+ARG FP_PACKAGE
+ARG FP_RELEASE
+ADD packages/$FP_PACKAGE/foresight-fp$FP_RELEASE.x-biserver*.deb /tmp/
+ADD packages/$FP_PACKAGE/foresight-libgit2-*.deb /tmp/
 
 RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
  apt-get install -y apache2 && \
+ apt-get install -y git && \
  apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
+ apt-get install -y -qq /tmp/foresight-libgit2-*.deb && \
  apt-get clean all && \
  echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
  locale-gen && \
- update-locale ru_RU.UTF-8 && \
- rm -f /tmp/*
+ update-locale ru_RU.UTF-8
 
 ADD packages/clickhouse-odbc-1.2.1-Linux.tar.gz /tmp/
 ADD packages/libicudata.so.50 /usr/local/lib
@@ -88,6 +91,7 @@ ADD bi/distr/host.tpl /opt/foresight/$BI_CFG_REG/host.tpl
 
 RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
     ln -sf /usr/lib/x86_64-linux-gnu/libodbc.so.1 /opt/foresight/$BI_OPT_DIR/bin/libodbc.so && \
+    ln -sf /opt/foresight/libgit2/lib/libgit2.so /opt/foresight/$BI_OPT_DIR/bin/libgit2.so && \
 #    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
 #    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
 #    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
