@@ -1,0 +1,11 @@
+{
+  "targetRepo": "${FP_REPO}",
+  "targetApp": "${FP_APP}",
+  "serviceUrl": "/${WEB_APP_URI}/app/PPService.axd",
+  "locale": "ru",
+  "locales": ["ru"],
+  "title": "Designer Business Applications",
+  "themes": ["dba10"],
+  "webSocketPort": "${WEB_PORT_WS}",
+  "showVersion": "true"
+}

@@ -37,11 +37,14 @@ ENV PG_LOG_STATEMENT $PG_LOG_STATEMENT
 
 ADD pg/distr/startup.sh /usr/bin/startup.sh
 
+ARG PG_ETC_DIR=/etc/postgresql/11/main
+ARG PG_DAT_DIR=/var/lib/postgresql/11/main
 USER root
-RUN echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/11/main/pg_hba.conf \
-  && echo "listen_addresses='*'" >> /etc/postgresql/11/main/postgresql.conf \
-  && echo "standard_conforming_strings on" >> /etc/postgresql/11/main/postgresql.conf \
-  && ln -sf /proc/self/fd/1 /var/lib/postgresql/11/main/postgresql.log \
+RUN echo "host all all 0.0.0.0/0 md5" >> $PG_ETC_DIR/pg_hba.conf \
+  && sed -i 's/^shared_preload_libraries = \x27online_analyze, plantuner\x27/shared_preload_libraries = \x27online_analyze, plantuner, pg_stat_statements\x27/g' $PG_ETC_DIR/postgresql.conf \
+  && echo "listen_addresses='*'" >> $PG_ETC_DIR/postgresql.conf \
+  && echo "standard_conforming_strings on" >> $PG_ETC_DIR/postgresql.conf \
+  && ln -sf /proc/self/fd/1 $PG_DAT_DIR/postgresql.log \
   && sed -i -e 's/\r$//' /usr/bin/startup.sh
 
 EXPOSE 5432

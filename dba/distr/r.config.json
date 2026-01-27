@@ -1,0 +1,12 @@
+{
+  "targetRepo": "${FP_REPO}",
+  "serviceUrl": "/${WEB_APP_URI}/app/PPService.axd",
+  "locale": "ru",
+  "locales": ["ru"],
+  "title": "Navigator",
+  "baseUrl": "/${WEB_APP_URI}/",
+  "themes": ["fap10"],
+  "webSocketPort": "${WEB_PORT_WS}",
+  "publicPrefix": "",
+  "showVersion": "true"
+}

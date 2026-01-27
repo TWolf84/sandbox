@@ -7,5 +7,13 @@
                 </Key>
             </BIS>
         </Key>
+        <Key Name="InMem">
+            <Key Name="CacheType" Value="global"/>
+            <Key Name="DataDir" Value="/mnt/cache/"/>
+            <Key Name="MemLimitMb" Value="2000"/>
+            <Key Name="DefaultAggr" Value="false"/>
+            <Key Name="AutoClear" Value="true"/>
+            <Key Name="PartialAggr" Value="true"/>
+        </Key>
     </Root>
 </Configuration>

@@ -1,20 +1,26 @@
 <Configuration>
     <Root>
-    <Key Name="Service">
-        <Epts>
-            <Key Name="server_1" address="http://molap:8910/FPBI_App_v10.x/axis2/services/PP.SOM.Som"/>
-        </Epts>
-        <Mbs>
-            <Key Name="SANDBOX_10">
-                <Cubes>
-                    <Key Name="cubebase_1" Keys="1589" endpoint="server_1"/>
-                </Cubes>
-            </Key>
-        </Mbs>
-    </Key>
+        <Key Name="Cubes">
+            <Key Name="CubeServiceAllowProxy" Value="1"/>
+        </Key>
+        <Key Name="Service">
+            <Epts>
+                <Key Name="server_1" address="http://molap:8910/FPBI_App_v10.x/axis2/services/PP.SOM.Som"/>
+            </Epts>
+            <Mbs>
+                <Key Name="SANDBOX_10">
+                    <Cubes>
+                        <!--Key Name="cubebase_1" Keys="584,845,854" endpoint="server_1"/-->
+                    </Cubes>
+                </Key>
+            </Mbs>
+        </Key>
+        <Key Name="Cubes">
+            <Key Name="CubeServiceAllowProxy" Value="1"/>
+        </Key>
         <Key Name="PP">
             <BIS>
-                <Key Name="System">
+                <Key Name="System" GetStatusEnabled="True" GetSystemInfoExtended="True">
                     <Session KeyIncr="0" Statable="Yes" SecureSession="0" />
                     <!--StateServer Host="${SS_HOST}" Port="6379" Type="Redis" ExpireTime="3600" /-->
                     <WebForms Port="${BI_PORT_WS}" />

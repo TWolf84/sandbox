@@ -1,0 +1,36 @@
+<PP>
+    <Metabases>
+        <${FP_REPO}
+            Name="${FP_REPO}"
+            Driver="POSTGRES"
+            Package="STANDARDSECURITYPACKAGE"
+            Authentication="1"
+            AuthenticationEx="1"
+            Crs=""
+            Crsa=""
+            CrLP="1"
+            DebugMode="0"
+            CachedTables=""
+            CompileAssemblyOnly="0"
+            MetabaseConnectForAuditModeEx="1"
+            UseOldComplexPassword="0"
+            CheckDefaultDB="false"
+            CheckAuditUser="false"
+            DL="false"
+            CusEv="false"
+            UCL="false"
+            PingTimeout="60000">
+            <LogonData
+                    SERVER="${DB_HOST}"
+                    DATABASE="${FP_REPO}.${FP_REPO_SCHEMA}"
+                    DATABASE_ONLY="${FP_REPO}"
+                    SCHEMA_ONLY="${FP_REPO_SCHEMA}"
+                    PROVIDER="POSTGRES"
+                    CASESENSITIVE="false"
+                    PQGSSAPI=""
+                    PQKRBSRVNAME=""
+                    SUPPORTBINARYPROTOCOL=""
+                    USEUPN="false" />
+        </${FP_REPO}>
+    </Metabases>
+</PP>

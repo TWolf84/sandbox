@@ -1,9 +1,9 @@
 ARG ASTRA_LINUX
 FROM $ASTRA_LINUX
 
+# 1. Базовое ПО
 ENV TZ=Europe/Moscow
 
-#ADD packages/libpq5*.deb /tmp/
 COPY packages/sources.list /etc/apt/
 
 RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
@@ -34,8 +34,8 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  apt-get install -y libatomic1 && \
  apt-get install -y libtiff5 && \
  apt-get install -y libjpeg62-turbo && \
+ apt-get install -y apache2 && \
  apt-get install -y postgresql-client && \
-    #apt-get install -y -qq /tmp/libpq5*.deb && \
  apt-get install -y nano && \
  apt-get install -y less && \
  apt-get install -y python3-pip && \
@@ -43,91 +43,87 @@ RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\/
  pip3 install PyYAML && \
  rm -f /tmp/*
 
-ARG BI_PACKAGE
-ADD packages/$BI_PACKAGE /tmp/
-
-RUN sed -i "s/^path-exclude \/usr\/share\/doc\//path-include \/usr\/share\/doc\//" /etc/dpkg/dpkg.cfg.d/docker && \
- apt-get install -y apache2 && \
- apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
- apt-get clean all && \
- echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
- echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
- locale-gen && \
- update-locale ru_RU.UTF-8 && \
- rm -f /tmp/*
-
+# 2. Дополнительное ПО: ФАП и пр.
+ARG FP_PACKAGE
+ARG FP_RELEASE
+ENV FP_RELEASE $FP_RELEASE
+ARG BI_OPT_DIR=fp$FP_RELEASE.x-biserver
+ENV BI_OPT_DIR $BI_OPT_DIR
+ADD packages/$FP_PACKAGE/foresight-fp$FP_RELEASE.x-biserver*.deb /tmp/
+ADD packages/$FP_PACKAGE/foresight-libgit2-*.deb /tmp/
+#ADD packages/libpq5*.deb /tmp/
 ADD packages/clickhouse-odbc-1.2.1-Linux.tar.gz /tmp/
 ADD packages/libicudata.so.50 /usr/local/lib
 ADD packages/libicuuc.so.50 /usr/local/lib
 RUN apt-get install -y openssl unixodbc && \
+ apt-get install -y git && \
+ #apt-get install -y -qq /tmp/libpq5*.deb && \
+ apt-get install -y -qq /tmp/foresight-*-biserver*.deb && \
+ apt-get install -y -qq /tmp/foresight-libgit2-*.deb && \
+ apt-get clean all && \
+ ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
+ ln -sf /usr/lib/x86_64-linux-gnu/libodbc.so.1 /opt/foresight/$BI_OPT_DIR/bin/libodbc.so && \
+ ln -sf /opt/foresight/libgit2/lib/libgit2.so /opt/foresight/$BI_OPT_DIR/bin/libgit2.so && \
  cp -r /tmp/clickhouse-odbc-1.2.1-Linux/* /usr/local && \
  odbcinst -i -d -f /usr/local/share/doc/clickhouse-odbc/config/odbcinst.ini.sample && \
  odbcinst -i -s -l -f /usr/local/share/doc/clickhouse-odbc/config/odbc.ini.sample && \
- rm -rf /tmp/*
+ rm -rf /tmp/* && \
+ echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen && \
+ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
+ locale-gen && \
+ update-locale ru_RU.UTF-8
 
-ARG BI_OPT_DIR
-ENV BI_OPT_DIR $BI_OPT_DIR
-ARG BI_ETC_DIR
+# 3. Настройка конфигурации
+ARG BI_ETC_DIR=apache2-fp$FP_RELEASE.x
 ENV BI_ETC_DIR $BI_ETC_DIR
-ARG BI_ETC_CTL
+ARG BI_ETC_CTL=apache2ctl-fp$FP_RELEASE.x
 ENV BI_ETC_CTL $BI_ETC_CTL
-ARG BI_RM4_RES
-
-ADD packages/$BI_RM4_RES /opt/foresight/$BI_OPT_DIR/bin/current.rm4
-ADD scripts/xvfb-run /usr/bin/
-ADD bi/distr/lsmon /usr/bin/lsmon
-
-ARG BI_CFG_REG
+ARG BI_CFG_DIR=fp$FP_RELEASE.x-biserver/etc
+ARG BI_CFG_REG=fp$FP_RELEASE.x-biserver/etc/registry
 ENV BI_CFG_REG $BI_CFG_REG
-ARG FP_RELEASE
-ENV FP_RELEASE $FP_RELEASE
-ARG BI_PORT
-
-#ADD bi/distr/registry.reg /opt/foresight/$BI_CFG_REG/registry.reg
-ADD bi/distr/project.tpl /opt/foresight/$BI_CFG_REG/project.tpl
-ADD bi/distr/host.tpl /opt/foresight/$BI_CFG_REG/host.tpl
-
-RUN ln -sf /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/foresight/$BI_OPT_DIR/bin/libpq.so && \
-    ln -sf /usr/lib/x86_64-linux-gnu/libodbc.so.1 /opt/foresight/$BI_OPT_DIR/bin/libodbc.so && \
-#    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
-#    sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
-#    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
-#    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
-    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/project.tpl && \
-    sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/host.tpl && \
-    sed -i 's/8810/'$BI_PORT'/g' /etc/$BI_ETC_DIR/ports.conf && \
-    sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
-    echo 'export LANG=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
-    echo 'export LC_ALL=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
-    chown -R www-data:www-data /opt/foresight && \
-    ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \
-    ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/error.log && \
-    sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
-    chmod +x /usr/bin/lsmon
-
-ARG BI_CFG_XML
-ENV BI_CFG_XML $BI_CFG_XML
-ARG FP_USER
-ENV FP_USER $FP_USER
 ARG FP_REPO
 ENV FP_REPO $FP_REPO
 ARG FP_REPO_SCHEMA
 ENV FP_REPO_SCHEMA $FP_REPO_SCHEMA
 ARG DB_HOST
 ENV DB_HOST $DB_HOST
+ARG BI_PORT
+
+ADD packages/$FP_PACKAGE/current.rm4 /opt/foresight/$BI_OPT_DIR/bin/
+ADD packages/lsmon /usr/bin/
+ADD scripts/xvfb-run /usr/bin/
+ADD scripts/repos_to_config.py /usr/bin/
+ADD scripts/project.tpl /opt/foresight/$BI_CFG_REG/project.tpl
+ADD scripts/host.tpl /opt/foresight/$BI_CFG_REG/host.tpl
+ADD molap/distr/registry.reg /opt/foresight/$BI_CFG_REG/registry.reg
+ADD molap/distr/settings.xml /opt/foresight/$BI_CFG_DIR/settings.xml
+ADD molap/distr/metabases.xml /opt/foresight/$BI_CFG_DIR/Metabases.xml
+ADD molap/distr/startup.sh /usr/bin/
+RUN sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/registry.reg && \
+ sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/project.tpl && \
+ sed -i 's/${FP_RELEASE}/'$FP_RELEASE'/g' /opt/foresight/$BI_CFG_REG/host.tpl && \
+ sed -i 's/^ *# *AstraMode on/AstraMode off/g' /etc/$BI_ETC_DIR/apache2.conf && \
+ echo 'export LANG=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
+ echo 'export LC_ALL=ru_RU.UTF-8' >> /etc/$BI_ETC_DIR/envvars && \
+ sed -i 's/8810/'$BI_PORT'/g' /etc/$BI_ETC_DIR/ports.conf && \
+ sed -i 's/${SS_HOST}/'$SS_HOST'/g' /opt/foresight/$BI_CFG_DIR/settings.xml && \
+ sed -i 's/${BI_PORT_WS}/'$BI_PORT_WS'/g' /opt/foresight/$BI_CFG_DIR/settings.xml && \
+ sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_DIR/Metabases.xml && \
+ sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_DIR/Metabases.xml && \
+ sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_DIR/Metabases.xml && \
+ chown -R www-data:www-data /opt/foresight && \
+ mkdir /mnt/cache && chown -R www-data:www-data /mnt/cache && \
+ ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/access.log && \
+ ln -sf /proc/self/fd/1 /var/log/$BI_ETC_DIR/error.log && \
+ sed -i -e 's/\r$//' /usr/bin/xvfb-run && \
+ sed -i -e 's/\r$//' /usr/bin/startup.sh && \
+ chmod +x /usr/bin/lsmon
+
+ARG FP_USER
+ENV FP_USER $FP_USER
 ARG FP_USER_AUDIT
 ENV FP_USER_AUDIT $FP_USER_AUDIT
 ENV PGPASSWORD $FP_USER
-
-ADD scripts/repos_to_config.py /usr/bin/
-ADD molap/distr/settings.xml /opt/foresight/$BI_CFG_XML/settings.xml
-ADD bi/distr/metabases.xml /opt/foresight/$BI_CFG_XML/Metabases.xml
-RUN sed -i 's/${FP_REPO}/'$FP_REPO'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml && \
-    sed -i 's/${FP_REPO_SCHEMA}/'$FP_REPO_SCHEMA'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml && \
-    sed -i 's/${DB_HOST}/'$DB_HOST'/g' /opt/foresight/$BI_CFG_XML/Metabases.xml
-
-ADD bi/distr/startup.sh /usr/bin/
-RUN sed -i -e 's/\r$//' /usr/bin/startup.sh
 
 EXPOSE $BI_PORT
 

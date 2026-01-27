@@ -1,5 +1,15 @@
 x-image: &image
   ASTRA_LINUX: registry.astralinux.ru/library/alse:1.7.5
+x-license: &license
+  LSHOST: 10.9.0.104
+x-release: &release
+  FP_PACKAGE: ${FP_PACKAGE}
+  FP_RELEASE: ${FP_RELEASE}
+x-repo: &repo
+  FP_REPO: ${FP_REPO}
+  FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
+  FP_USER: ${FP_USER}
+  FP_USER_AUDIT: ${FP_USER_AUDIT}
 
 services:
   pg:
@@ -7,11 +17,7 @@ services:
       context: /
       dockerfile: pg/Dockerfile
       args:
-        <<: *image
-        FP_USER: ${FP_USER}
-        FP_REPO: ${FP_REPO}
-        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
-        FP_USER_AUDIT: ${FP_USER_AUDIT}
+        <<: [*image,*repo]
         PG_LOG_STATEMENT: ${PG_LOG_STATEMENT}
     volumes:
       - pg_data:/var/lib/postgresql/11/main
@@ -31,74 +37,47 @@ services:
         SS_LOG_LEVEL: ${SS_LOG_LEVEL}
   bi:
     environment:
-      - LSHOST
+      <<: *license
     build:
       context: /
       dockerfile: bi/Dockerfile
       args:
-        <<: *image
-        BI_RM4_RES: ${FP_PACKAGE}/current.rm4
-        BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
-        BI_CFG_XML: fp${FP_RELEASE}.x-biserver/${BI_CFG_XML:-bin}
-        BI_CFG_REG: fp${FP_RELEASE}.x-biserver/${BI_CFG_REG:-bin}
-        BI_ETC_DIR: apache2-fp${FP_RELEASE}.x
-        BI_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x
+        <<: [*image,*release,*repo]
         BI_PORT: ${BI_PORT}
         BI_PORT_WS: ${BI_PORT_WS}
-        FP_PACKAGE: ${FP_PACKAGE}
-        FP_RELEASE: ${FP_RELEASE}
-        FP_USER: ${FP_USER}
-        FP_REPO: ${FP_REPO}
-        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
-        FP_USER_AUDIT: ${FP_USER_AUDIT}
         DB_HOST: pg
         #SS_HOST: redis
     ports: 
       - "${BI_PORT}:${BI_PORT}"
-      - "${BI_PORT_WS}:${BI_PORT_WS}"
     links:
       - pg
       #- redis
     depends_on:
       pg:
         condition: service_healthy
-      redis:
-        condition: service_started
+    #  redis:
+    #    condition: service_started
     configs:
       - repositories
   molap:
     environment:
-      - LSHOST
+      <<: *license
     build:
       context: /
       dockerfile: molap/Dockerfile
       args:
-        <<: *image
-        BI_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-biserver*.deb
-        BI_RM4_RES: ${FP_PACKAGE}/current.rm4
-        BI_OPT_DIR: fp${FP_RELEASE}.x-biserver
-        BI_CFG_XML: fp${FP_RELEASE}.x-biserver/${BI_CFG_XML:-bin}
-        BI_CFG_REG: fp${FP_RELEASE}.x-biserver/${BI_CFG_REG:-bin}
-        BI_ETC_DIR: apache2-fp${FP_RELEASE}.x
-        BI_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x
+        <<: [*image,*release,*repo]
         BI_PORT: ${MOLAP_PORT}
-        FP_RELEASE: ${FP_RELEASE}
-        FP_USER: ${FP_USER}
-        FP_REPO: ${FP_REPO}
-        FP_REPO_SCHEMA: ${FP_REPO_SCHEMA}
-        FP_USER_AUDIT: ${FP_USER_AUDIT}
         DB_HOST: pg
-        #SS_HOST: redis
+    volumes:
+      - molap_data:/mnt/cache
     ports:
       - "${MOLAP_PORT}:${MOLAP_PORT}"
     links:
       - pg
-      #- redis
     depends_on:
       pg:
         condition: service_healthy
-      redis:
-        condition: service_started
     configs:
       - repositories
   dba:
@@ -106,22 +85,14 @@ services:
       context: /
       dockerfile: dba/Dockerfile
       args:
-        <<: *image
-        WEB_PACKAGE: ${FP_PACKAGE}/foresight-fp${FP_RELEASE}.x-webserver*.deb
-        WEB_DBA_ZIP: ${FP_PACKAGE}/DBA.zip
-        WEB_APP_DIR: fp${FP_RELEASE}.x-webserver
-        WEB_DBA_DIR: fp${FP_RELEASE}.x-dba
-        WEB_ETC_DIR: apache2-fp${FP_RELEASE}.x-web
-        WEB_ETC_CTL: apache2ctl-fp${FP_RELEASE}.x-web
-        WEB_APP_URI: fp${FP_RELEASE}.x
+        <<: [*image,*release]
         WEB_PORT: ${WEB_PORT}
         WEB_PORT_WS: ${WEB_PORT_WS}
-        FP_REPO: ${FP_REPO}
-        FP_APP: ${FP_APP}
         BI_HOST: bi
         BI_PORT: ${BI_PORT}
         BI_PORT_WS: ${BI_PORT_WS}
-        BI_SERVICE: FPBI_App_v${FP_RELEASE}.x/axis2/services/PP.SOM.Som
+        FP_REPO: ${FP_REPO}
+        FP_APP: ${FP_APP}
     ports:
       - "${WEB_PORT}:${WEB_PORT}"
       - "${WEB_PORT_WS}:${WEB_PORT_WS}"
@@ -131,7 +102,7 @@ services:
       - bi
   scheduler:
     environment:
-      - LSHOST
+      <<: *license
     build:
       context: /
       dockerfile: scheduler/Dockerfile
@@ -153,9 +124,21 @@ services:
       - pg
     depends_on:
       - pg
+  desktop:
+    environment:
+      <<: *license
+    build:
+      context: /
+      dockerfile: desktop/Dockerfile
+      args:
+        <<: [*image,*release]
+        RDP_PORT: ${RDP_PORT}
+    configs:
+      - repositories
 
 volumes:
   pg_data:
+  molap_data:
 
 configs:
   repositories:

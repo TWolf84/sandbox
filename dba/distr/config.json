@@ -1,9 +1,0 @@
-{
-  "targetRepo": "",
-  "serviceUrl": "http://localhost:8110/fp10.x/app/PPService.axd",
-  "locale": "ru",
-  "locales": ["ru"],
-  "title": "FAP10",
-  "baseUrl": "http://localhost:8110/fp10.x/",
-  "themes": ["fap10"]
-}
